@@ -10,8 +10,6 @@ export const Footer: React.FC<Props> = ({
   todos,
   filterSelected,
   setFilterSelected,
-  handleDelete,
-  clearingCompletedIds,
   handleClearCompleted,
 }) => {
   const remainingTodosCount = todos.filter(todo => !todo.completed).length;

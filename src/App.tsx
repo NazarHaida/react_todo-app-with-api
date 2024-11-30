@@ -27,7 +27,9 @@ export const App: React.FC = () => {
   const [updatingStatusIds, setUpdatingStatusIds] = useState<Set<number>>(
     new Set(),
   );
-  const [clearingCompletedIds, setClearingCompletedIds] = useState<Set<number>>(new Set());
+  const [clearingCompletedIds, setClearingCompletedIds] = useState<Set<number>>(
+    new Set(),
+  );
 
   const [allCompleted, setAllCompleted] = useState(false);
 
@@ -101,7 +103,7 @@ export const App: React.FC = () => {
   };
 
   const handleStatus = async (todoId, completed) => {
-    setUpdatingStatusIds((prev) => new Set(prev.add(todoId)));
+    setUpdatingStatusIds(prev => new Set(prev.add(todoId)));
     const todoToUpdate = todos.find(todo => todo.id === todoId);
 
     const updatedTodo = {
@@ -116,10 +118,13 @@ export const App: React.FC = () => {
     } catch (Error) {
       setError('Unable to update a todo');
     } finally {
-      setUpdatingStatusIds((prev) => {
+      setUpdatingStatusIds(prev => {
         const updated = new Set(prev);
+
         updated.delete(todoId);
-        return updated;})
+
+        return updated;
+      });
     }
   };
 
@@ -159,12 +164,13 @@ export const App: React.FC = () => {
 
   const handleClearCompleted = async () => {
     const completedTodos = todos.filter(todo => todo.completed);
+
     setClearingCompletedIds(new Set(completedTodos.map(todo => todo.id)));
     try {
       await Promise.all(
-        completedTodos.map(async (todo) => {
+        completedTodos.map(async todo => {
           await handleDelete(todo.id);
-        })
+        }),
       );
     } catch {
       setError('Unable to delete a todo');
@@ -285,7 +291,6 @@ export const App: React.FC = () => {
             clearingCompletedIds={clearingCompletedIds}
             handleClearCompleted={handleClearCompleted}
           />
-
         )}
       </div>
 

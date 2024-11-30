@@ -18,7 +18,7 @@ export const TodoItem: React.FC<Props> = ({
   isDeleting,
   handleStatus,
   updatingStatusIds,
-  clearingCompletedIds
+  clearingCompletedIds,
 }) => {
   const [editingId, setEditingId] = useState<null | number>(null);
   const [editingVal, setEditingVal] = useState('');
@@ -144,7 +144,6 @@ export const TodoItem: React.FC<Props> = ({
           onChange={() => {
             handleStatus(id, completed);
           }}
-
         />
       </label>
 
@@ -168,7 +167,6 @@ export const TodoItem: React.FC<Props> = ({
               handleBlur(id);
             }}
             onKeyDown={event => handleKeyDown(event, id)}
-
           />
         </form>
       ) : (
