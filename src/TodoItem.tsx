@@ -17,9 +17,8 @@ export const TodoItem: React.FC<Props> = ({
   tempTodo,
   isDeleting,
   handleStatus,
-  isUpdatingStatus,
   updatingStatusIds,
-  isSubmitting,
+  clearingCompletedIds
 }) => {
   const [editingId, setEditingId] = useState<null | number>(null);
   const [editingVal, setEditingVal] = useState('');
@@ -56,6 +55,8 @@ export const TodoItem: React.FC<Props> = ({
       completed: completed,
     };
 
+    setIsUpdatingTitle(true);
+
     try {
       await editTodos(updatedTodo);
       updateTodos(todoId, editingVal.trim());
@@ -81,7 +82,6 @@ export const TodoItem: React.FC<Props> = ({
     if (event.key === 'Enter') {
       event.preventDefault();
       handleSubmit(todoId);
-      setIsUpdatingTitle(true);
     } else if (event.key === 'Escape') {
       setEditingId(null);
       setEditingVal(title);
@@ -144,7 +144,7 @@ export const TodoItem: React.FC<Props> = ({
           onChange={() => {
             handleStatus(id, completed);
           }}
-          disabled={isSubmitting}
+
         />
       </label>
 
@@ -168,7 +168,7 @@ export const TodoItem: React.FC<Props> = ({
               handleBlur(id);
             }}
             onKeyDown={event => handleKeyDown(event, id)}
-            disabled={isSubmitting}
+
           />
         </form>
       ) : (
@@ -196,8 +196,8 @@ export const TodoItem: React.FC<Props> = ({
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
           'is-active':
+            clearingCompletedIds.has(id) ||
             isDeleting ||
-            isUpdatingStatus ||
             isUpdatingTitle ||
             updatingStatusIds.has(id),
         })}

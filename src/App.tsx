@@ -24,10 +24,11 @@ export const App: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [filterSelected, setFilterSelected] = useState<Filters>(Filters.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [updatingStatusId, setUpdatingStatusId] = useState<number | null>(null);
   const [updatingStatusIds, setUpdatingStatusIds] = useState<Set<number>>(
     new Set(),
   );
+  const [clearingCompletedIds, setClearingCompletedIds] = useState<Set<number>>(new Set());
+
   const [allCompleted, setAllCompleted] = useState(false);
 
   const ref = useRef<HTMLInputElement | null>(null);
@@ -47,9 +48,6 @@ export const App: React.FC = () => {
     try {
       await deleteTodos(todoId);
       updateTodos(todoId, null);
-      const updatedTodos = await getTodos();
-
-      setTodos(updatedTodos);
       ref.current.focus();
     } catch (Error) {
       setError('Unable to delete a todo');
@@ -103,7 +101,7 @@ export const App: React.FC = () => {
   };
 
   const handleStatus = async (todoId, completed) => {
-    setUpdatingStatusId(todoId);
+    setUpdatingStatusIds((prev) => new Set(prev.add(todoId)));
     const todoToUpdate = todos.find(todo => todo.id === todoId);
 
     const updatedTodo = {
@@ -118,7 +116,10 @@ export const App: React.FC = () => {
     } catch (Error) {
       setError('Unable to update a todo');
     } finally {
-      setUpdatingStatusId(null);
+      setUpdatingStatusIds((prev) => {
+        const updated = new Set(prev);
+        updated.delete(todoId);
+        return updated;})
     }
   };
 
@@ -153,6 +154,22 @@ export const App: React.FC = () => {
       setError('Unable to update a todo');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleClearCompleted = async () => {
+    const completedTodos = todos.filter(todo => todo.completed);
+    setClearingCompletedIds(new Set(completedTodos.map(todo => todo.id)));
+    try {
+      await Promise.all(
+        completedTodos.map(async (todo) => {
+          await handleDelete(todo.id);
+        })
+      );
+    } catch {
+      setError('Unable to delete a todo');
+    } finally {
+      setClearingCompletedIds(new Set());
     }
   };
 
@@ -244,9 +261,8 @@ export const App: React.FC = () => {
           setError={setError}
           handleDelete={handleDelete}
           handleStatus={handleStatus}
-          updatingStatusId={updatingStatusId}
           updatingStatusIds={updatingStatusIds}
-          isSubmitting={isSubmitting}
+          clearingCompletedIds={clearingCompletedIds}
         />
 
         {tempTodo && (
@@ -266,7 +282,10 @@ export const App: React.FC = () => {
             filterSelected={filterSelected}
             setFilterSelected={setFilterSelected}
             handleDelete={handleDelete}
+            clearingCompletedIds={clearingCompletedIds}
+            handleClearCompleted={handleClearCompleted}
           />
+
         )}
       </div>
 

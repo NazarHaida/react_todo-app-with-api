@@ -14,9 +14,8 @@ export const TodoList: React.FC<Props> = ({
   updateStatus,
   handleDelete,
   handleStatus,
-  updatingStatusId,
   updatingStatusIds,
-  isSubmitting,
+  clearingCompletedIds,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -33,8 +32,7 @@ export const TodoList: React.FC<Props> = ({
           handleDelete={handleDelete}
           handleStatus={handleStatus}
           updatingStatusIds={updatingStatusIds}
-          isUpdatingStatus={updatingStatusId === todo.id}
-          isSubmitting={isSubmitting}
+          clearingCompletedIds={clearingCompletedIds}
         />
       ))}
     </section>

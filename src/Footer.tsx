@@ -11,6 +11,8 @@ export const Footer: React.FC<Props> = ({
   filterSelected,
   setFilterSelected,
   handleDelete,
+  clearingCompletedIds,
+  handleClearCompleted,
 }) => {
   const remainingTodosCount = todos.filter(todo => !todo.completed).length;
 
@@ -42,13 +44,7 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        onClick={() => {
-          todos
-            .filter(todo => todo.completed)
-            .forEach(async todo => {
-              await handleDelete(todo.id);
-            });
-        }}
+        onClick={handleClearCompleted}
         disabled={todos.every(todo => !todo.completed)}
       >
         Clear completed
